@@ -1,5 +1,92 @@
 'use strict';
 
+/************************
+ +  DOM Traversal
+ * ********************/
+
+/**
+ * Element Iterations with callback
+ *
+ * @param    { element/nodeList } elems Elements to interate
+ * @callback { function } func Callback function to perform on each element in set
+ */
+function eachElem( elems, callback ) {
+    const elemList = elems.length ? elems : [ elems ];
+    let i;
+
+    for ( i = 0; i < elemList.length; i++ ) {
+        callback( elems[ i ] );
+    }
+}
+
+
+/**
+ * Get element siblings
+ *
+ * @param  { element }  element The element to get the siblings of
+ * @return { nodeList } returns an array list of node siblings
+ */
+function getSiblings( elem ) {
+
+    return Array.prototype.filter.call(
+        elem.parentNode.children,
+        ( child ) =>{
+            return child !== elem;
+        }
+    );
+}
+
+
+
+
+/************************
+ +  DOM Manipulation
+ * ********************/
+
+/**
+ * Removes selected node from DOM
+ *
+ * @param { element } elem The element to remove
+ */
+function removeNode( elem ) {
+    elem.parentNode.removeChild( elem );
+}
+
+
+/**
+ * Inserts a node after another node
+ *
+ * @param { element } elem       The element to insert
+ * @param { Element } targetElem The new older sibling
+ */
+function insertAfter( elem, targetElem ) {
+    targetElem.parentNode.insertBefore( elem, targetElem.nextSibling );
+}
+
+
+
+/**
+ * Initiates a component for each element of a given selector
+ *
+ * @param { function }     Component The constructor function for a component
+ * @param { string/array } selector  The selector to instantiate a component on
+ * @return Returns an array of constructor objects
+ */
+function componentsInit( Component, selector ) {
+    let components = [];
+
+    eachElem(
+        document.querySelectorAll( selector ),
+        ( elem ) => {
+            components.push( new Component( elem ) );
+        }
+    );
+
+    return components;
+}
+
+
+
 
 /************************
  +  Data formatting
@@ -43,7 +130,7 @@ function toWordArray( source ) {
 function randomizeArray( arr ) {
     let i;
 
-    for ( i = arr.length; i ) {
+    for ( i = arr.length; i; ) {
         let j = parseInt( Math.random( ) * i );
         let x = arr[ --i ];
         arr[ i ] = arr[ j ];
@@ -130,69 +217,6 @@ function parseToJson( json ) {
     return false;
 }
 
-
-/************************
- +  DOM Traversal
- * ********************/
-
-/**
- * Element Iterations with callback
- *
- * @param    { element/nodeList } elems Elements to interate
- * @callback { function } func Callback function to perform on each element in set
- */
-function eachElem( elems, callback ) {
-    const elemList = elems.length ? elems : [ elems ];
-    let i;
-
-    for ( i = 0; i < elemList.length; i++ ) {
-        callback( elems[ i ] );
-    }
-}
-
-
-/**
- * Get element siblings
- *
- * @param  { element }  element The element to get the siblings of
- * @return { nodeList } returns an array list of node siblings
- */
-function getSiblings( elem ) {
-
-    return Array.prototype.filter.call(
-        elem.parentNode.children,
-        ( child ) =>{
-            return child !== elem;
-        }
-    );
-}
-
-
-
-
-/************************
- +  DOM Manipulation
- * ********************/
-
-/**
- * Removes selected node from DOM
- *
- * @param { element } elem The element to remove
- */
-function removeNode( elem ) {
-    elem.parentNode.removeChild( elem );
-}
-
-
-/**
- * Inserts a node after another node
- *
- * @param { element } elem       The element to insert
- * @param { Element } targetElem The new older sibling
- */
-function insertAfter( elem, targetElem ) {
-    targetElem.parentNode.insertBefore( elem, targetElem.nextSibling );
-}
 
 
 
@@ -360,14 +384,13 @@ function isCrawler( ) {
  * @return { String / false } Returns matching domain if any
  */
 function hasReferrer( ref ) {
-    const referrer = document.referrer;
     const referrers = toWordArray( ref );
     let i;
 
     for ( i = 0; i < referrers.length; i++ ) {
         let refRegex = '^https?:\/\/([^\/]+\.)?' + referrers[ i ] + '(\/|$)';
 
-        if ( referrer.match( new RegExp( refRegex, 'ig' ) ) ) {
+        if ( document.referrer.match( new RegExp( refRegex, 'ig' ) ) ) {
             return referrers[ i ];
         }
     }
@@ -394,7 +417,7 @@ function setCookie( name, value, days ) {
     let expiration = new Date( new Date( ).setDate( expiration.getDate( ) + days ) ).toUTCString( );
 
     /* Set expiration to expire in X days from initial */
-    return document.cookie = name + '=' + escape( value ) + ( ( days === null ) ? '' : ';expires=' + expiration ) + ';path=/;domain=' + window.location.hostname;
+    document.cookie = name + '=' + escape( value ) + ( ( days === null ) ? '' : ';expires=' + expiration ) + ';path=/;domain=' + window.location.hostname;
 }
 
 /**
@@ -718,7 +741,6 @@ function getData( endpoint, callback, property, cache ) {
             }
 
         } else {
-            const $ = $ || jQuery || require( 'jquery2');
 
             if ( crossDomain ) {
                 $.support.cors = true;
@@ -948,14 +970,6 @@ function getRandomInRange( min, max ) {
 
 export {
 
-    /* Formatting */
-    toWordArray,
-    randomizeArray,
-    formatNumber,
-    formatPrice,
-    twoDigitFormat,
-    stripPlurals,
-
     /* DOM Traversal*/
     eachElem,
     getSiblings,
@@ -963,6 +977,17 @@ export {
     /* DOM Manipulation */
     removeNode,
     insertAfter,
+
+    /* Components */
+    componentsInit,
+
+    /* Formatting */
+    toWordArray,
+    randomizeArray,
+    formatNumber,
+    formatPrice,
+    twoDigitFormat,
+    stripPlurals,
 
     /* Classes */
     addClass,

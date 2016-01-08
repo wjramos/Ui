@@ -46,11 +46,14 @@ class Overlay {
         util.mediaSourceSwap( element );
 
         /* Bind sub-elements with close events */
-        util.bindChildren( element, STRING.selector.closeTriggers, STRING.event.click,
+        util.bindChildren(
+            element,
+            STRING.selector.closeTriggers,
+            'click',
             ( ) => {
 
-                util.addClass( element, STRING.effect.fadeOut );
-                util.getSiblings( element ).removeClass( STRING.effect.backdrop );
+                util.addClass( element, 'fade out' );
+                util.getSiblings( element ).removeClass( 'blur' );
 
                 setTimeout(
                     ( ) => {
@@ -62,17 +65,20 @@ class Overlay {
         );
 
         /* Add visual effect to background sibling elements */
-        util.domReady( util.addClass( util.getSiblings( element ), STRING.effect.backdrop ) );
+        util.domReady(
+            util.addClass(
+                util.getSiblings( element ),
+                [ 'blur','fade in' ]
+            )
+        );
 
         /* Display the Overlay */
         element.style.visibility = 'initial';
-        util.removeClass( element, STRING.effect.hidden );
-        util.addClass( element, STRING.effect.fadeIn );
+        util.addClass( element, 'fade in' );
     }
 }
 
 
 export {
-    init,
-    showOverlay
+    Overlay
 };

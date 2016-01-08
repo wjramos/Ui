@@ -1,5 +1,5 @@
-import overlay from 'components/sitewide-overlay/js/main';
-import STRING from 'components/sitewide-overlay/js/strings';
+import Overlay from './main';
+import STRING from './strings';
 
 /* It is necessary to fire immediately when the overlay has priority over the rest of the page */
-overlay.init( STRING.selector.defaultId );
+Overlay.init( STRING.selector.defaultId );

@@ -1,6 +1,6 @@
 'use strict';
 
-import componentInit from './init';
+import componentsInit from './utils';
 
 /* UI Components */
 import Timer from 'components/countdown-timer/js/main';

@@ -8,16 +8,12 @@ export {
     cookieName    : 'seenCampaign',
     selector      : {
         defaultId     : document.getElementById( 'sitewide-overlay' ),
-        backdrop      : '.backdrop',
         closeTriggers : '.backdrop, .close, .close-overlay'
     },
     effect        : {
-        hidden    : 'hidden',
-        blur      : 'blur',
-        appear    : 'appear',
         fadeOut   : 'fade out',
         fadeIn    : 'fade in',
-        backdrop  : 'blur fade in appear'
+        backdrop  : 'blur appear'
     },
     event         : {
         domReady  : 'DOMContentLoaded',
