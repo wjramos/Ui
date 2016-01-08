@@ -1,0 +1,129 @@
+'use strict';
+
+var util = require( '../../ui/js/utils' );
+var STRING = require( './strings' );
+
+function Timer( element ) {
+    this.element = element;
+    this.remaining = null;
+    this.countdown = null;
+    this.settings = {
+        end: '',
+        display: null,
+        endMessage: '',
+        utcOffset: util.isDST( ) ? 7 : 8
+    };
+
+    this.init( );
+};
+
+Timer.prototype.init = function ( ) {
+    var _this = this;
+    var settings = _this.settings;
+    var element = _this.element;
+    var dst = util.isDST( );
+
+    element.style.visibility = STRING.visibility.hidden; // Do not display until populated
+    settings.end = Date.parse( element.getAttribute( STRING.data.end ) );
+
+    var endMessage = element.getAttribute( STRING.data.endMessage );
+    if ( endMessage ) {
+        settings.endMessage = endMessage;
+    }
+
+    var offset = parseInt( element.getAttribute( STRING.data.utcOffset ) );
+    if ( offset ) {
+        if ( !dst ) {
+            settings.utcOffset = settings.utcOffset + 1;
+        }
+        settings.utcOffset = parseInt( offset );
+    }
+
+    // This should be made to be the inverse, current implementation is using PDT instead of PST, so need to do it this way for now
+    if ( !dst ) {
+        settings.utcOffset = settings.utcOffset + 1;
+    }
+
+    if ( settings.end && settings.utcOffset ) {
+        settings.display = element.innerHTML;
+        _this.countdown = setInterval(
+            function ( ) {
+                _this.update( );
+            },
+            1000
+        );
+    }
+};
+
+Timer.prototype.update = function ( ) {
+    var _this = this
+    var settings = _this.settings;
+
+    _this.remaining = util.getTimeUntil( settings.end, settings.utcOffset );
+    _this.display( );
+};
+
+Timer.prototype.display = function ( ) {
+    var _this = this;
+    var remaining = _this.remaining;
+    var countdown = _this.countdown;
+    var element = _this.element;
+    var display = _this.buildDisplay( );
+
+    element.innerHTML = display;
+
+    if ( element.style.visibility === STRING.visibility.hidden ) {
+        element.style.visibility = STRING.visibility.visible;
+    }
+
+    /* Current datetime is past end datetime */
+    if ( remaining.total <= 0 ) {
+        clearInterval( countdown );
+    }
+};
+
+Timer.prototype.replaceCount = function ( countString ) {
+    var _this     = this;
+    var settings  = _this.settings;
+    var remaining = _this.remaining;
+    var countString = countString;
+
+    if ( remaining.days < 1
+        && countString.toLowerCase( ).indexOf( 'seconds' ) < 0
+        && countString.toLowerCase( ).indexOf( 'minutes' ) < 0
+        && countString.toLowerCase( ).indexOf( 'hours' ) < 0 ) {
+        countString = countString.replace( /{\s*?DAYS\s*?}/i, 'Last' );
+    } else {
+        countString = countString
+            .replace( /{\s*?DAYS\s*?}/i, remaining.days.toString( ) )
+            .replace( /{\s*?HOURS\s*?}/i, util.twoDigitFormat( remaining.hours ) )
+            .replace( /{\s*?MINUTES\s*?}/i, util.twoDigitFormat( remaining.minutes ) )
+            .replace( /{\s*?SECONDS\s*?}/i, util.twoDigitFormat( remaining.seconds ) )
+            .replace( /{\s*?DATE\s*?}/i, new Date( settings.end ).toDateString( ) );
+    }
+
+    return util.stripPlurals( countString );
+}
+
+Timer.prototype.buildDisplay = function ( ) {
+    var _this = this;
+    var settings = _this.settings;
+    var remaining = _this.remaining;
+    var display;
+
+    /* Current datetime is past end datetime */
+    if ( remaining.total > 0 ) {
+
+        /* Substitute number values into label */
+        display = _this.replaceCount( settings.display );
+
+    } else {
+
+        /* Display End */
+        display = settings.endMessage;
+    }
+
+    return display;
+}
+
+module.exports = Timer;
