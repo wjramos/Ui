@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = {
+export {
     data: {
         endpoint     : 'data-count-endpoint',
         countProperty: 'data-count-property',

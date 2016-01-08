@@ -15,9 +15,9 @@ const components = [ Timer, Counter, ProductGrid, SitewideOverlay ];
 function init( ) {
     let i;
     for ( i = 0; i < components.length; i++ ) {
-        componentInit( components[ i ], '.js-' + components[ i ].name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase( ) );
+        componentInit( components[ i ], '.js-' + components[ i ].name.replace( /([a-z])([A-Z])/g, '$1-$2' ).toLowerCase( ) );
     }
 }
 
 /* Init on call */
-module.exports.init = init;
+export { init };

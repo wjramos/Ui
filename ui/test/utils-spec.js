@@ -7,7 +7,71 @@ var util = shim.init( '../../countdown-timer/js/utils', {} );
 
 
 
+    // /* Formatting */
+    // toWordArray,
+    // randomizeArray,
+    // formatNumber,
+    // formatPrice,
+    // twoDigitFormat,
+    // stripPlurals,
 
+    // /* DOM Traversal*/
+    // eachElem,
+    // getSiblings,
+
+    // /* DOM Manipulation */
+    // removeNode,
+    // insertAfter,
+
+    // /* Classes */
+    // addClass,
+    // removeClass,
+    // hasClass,
+    // hasClasses,
+
+    // /* Client Info */
+    // getVersionIE,
+    // getBreakpoint,
+    // isCrawler,
+    // hasReferrer,
+
+    // /* Cookies */
+    // setCookie,
+    // hasCookie,
+
+
+    // /* Bootstrap Utils */
+    // calculateCols,
+    // getColumns,
+
+    // /* Event Binding */
+    // bindEvent,
+    // bindChildren,
+    // unbindEvent,
+    // domReady,
+
+    // /* Attributes */
+    // copyAttrib,
+    // mediaSourceSwap,
+
+    // /* Computed Styles */
+    // getTransition,
+
+    // /* Retrieve Data */
+    // getData,
+    // getProducts,
+    // getFeaturedProductImage,
+
+    // /* Date + Time */
+    // getCalibratedTime,
+    // isDST,
+    // getTimeDiff,
+    // getTimeUntil,
+    // parseToMs,
+    // convertMs,
+
+    // /* Number Generation */
+    // getRandomInRange
 
 
 

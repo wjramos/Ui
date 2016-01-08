@@ -12,25 +12,25 @@
  * @return { array } Returns array of individual words
  */
 function toWordArray( source ) {
-    source = source.split( ' ' );
+    let wordList = source.split( ' ' );
     let i;
 
     // Break up any classes that contain multiple
-    for ( i = 0; i < source.length; i++ ) {
-        if ( source[ i ].indexOf( ' ' ) > -1 ) {
-            let multiple = source[ i ].split( ' ' );
+    for ( i = 0; i < wordList.length; i++ ) {
+        if ( wordList[ i ].indexOf( ' ' ) > -1 ) {
+            let multiple = wordList[ i ].split( ' ' );
             let j;
 
             // Remove index that contains multiple
-            source.splice( i, 1 );
+            wordList.splice( i, 1 );
 
             for ( j = 0; j < multiple.length; j++ ) {
-                source.push( multiple[ j ] );
+                wordList.push( multiple[ j ] );
             }
         }
     }
 
-    return source;
+    return wordList;
 }
 
 
@@ -43,7 +43,7 @@ function toWordArray( source ) {
 function randomizeArray( arr ) {
     let i;
 
-    for ( i = arr.length; i; ) {
+    for ( i = arr.length; i ) {
         let j = parseInt( Math.random( ) * i );
         let x = arr[ --i ];
         arr[ i ] = arr[ j ];
@@ -60,13 +60,9 @@ function randomizeArray( arr ) {
  * @return { string } Returns string of number formatted to thousands
  */
 function formatNumber( num ) {
-    let formattedNum;
+    let formattedNum = typeof num === 'string' ? parseFloat( num.replace( /,/g, '' ) ) : num;
 
-    if ( typeof num === 'string' ) {
-        formattedNum= parseFloat( formattedNum.replace( /,/g, '' ) );
-    }
-
-    return formattedNum && typeof formattedNum === 'number' ? formattedNum.toString( ).replace( /\B(?=(\d{3})+(?!\d))/g, ',' ) : '';
+    return formattedNum ? formattedNum.toString( ).replace( /\B(?=(\d{3})+(?!\d))/g, ',' ) : '';
 }
 
 /**
@@ -83,7 +79,7 @@ function formatPrice( max, min ) {
     if ( minPrice < maxPrice ) {
         return '$' + minPrice + '&nbsp;&#8209;&nbsp;$' + maxPrice;
     } else if ( ( maxPrice && !minPrice ) || maxPrice === minPrice ) {
-            return '$' + maxPrice;
+        return '$' + maxPrice;
     } else if ( minPrice && !maxPrice ) {
         return '$' + minPrice;
     } else {
@@ -316,7 +312,7 @@ function hasClasses( elems, classes, callback ) {
  * @return { number / false } Returns number or false corresponding to IE version
  */
 function getVersionIE( ) {
-    var version = false;
+    let version = false;
 
     /* IE 10- */
     if ( navigator.appName === 'Microsoft Internet Explorer' ) {
@@ -343,12 +339,7 @@ function getVersionIE( ) {
  * @return { String | null } String containing the value in the content property of the body:after element, if no win.getComputedStyle, returns null.
  */
 function getBreakpoint( ) {
-    if ( window.getComputedStyle ) {
-        var contentString = window.getComputedStyle( document.body, ':after' ).getPropertyValue( 'content' );
-        return contentString.replace( /\W/g, '' );
-    }
-
-    return null;
+    return window.getComputedStyle ? window.getComputedStyle( document.body, ':after' ).getPropertyValue( 'content' ).replace( /\W/g, '' ) : null;
 }
 
 
@@ -400,14 +391,10 @@ function hasReferrer( ref ) {
  * @param { number } days  Days until the cookie should expire
  */
 function setCookie( name, value, days ) {
-    var expiration = new Date( );
+    let expiration = new Date( new Date( ).setDate( expiration.getDate( ) + days ) ).toUTCString( );
 
     /* Set expiration to expire in X days from initial */
-    expiration.setDate( expiration.getDate( ) + days );
-
-    var cookieString = escape( value ) + ( ( days === null ) ? '' : ';expires=' + expiration.toUTCString( ) );
-
-    document.cookie = name + '=' + cookieString + ';path=/;domain=' + window.location.hostname;
+    return document.cookie = name + '=' + escape( value ) + ( ( days === null ) ? '' : ';expires=' + expiration ) + ';path=/;domain=' + window.location.hostname;
 }
 
 /**
@@ -418,7 +405,6 @@ function setCookie( name, value, days ) {
 function hasCookie( name ) {
     return window.document.cookie.indexOf( name ) >= 0;
 }
-
 
 
 
@@ -704,7 +690,7 @@ function getData( endpoint, callback, property, cache ) {
                     dom.async = false;
 
                     if ( data === null || typeof data === 'undefined' ) {
-                        data = $.parseJSON( data ).firstChild.textContent;
+                        data = parseToJson( data ).firstChild.textContent;
                         data = data.firstChild.textContent;
                     }
 
@@ -732,7 +718,7 @@ function getData( endpoint, callback, property, cache ) {
             }
 
         } else {
-            var $ = require( 'jquery2');
+            const $ = $ || jQuery || require( 'jquery2');
 
             if ( crossDomain ) {
                 $.support.cors = true;
@@ -782,8 +768,7 @@ function getFeaturedProductImage( product ) {
  * @return Returns an array of products that contain necessary data, indexed by style
  */
 function getProducts( styles, limit = -1 ) {
-    var styleList = toWordArray( styles );
-
+    const styleList = toWordArray( styles );
     const products = [];
     let i;
 

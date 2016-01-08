@@ -1,86 +1,78 @@
 'use strict';
 
-var log = require( 'packages/logger' )();
+import util from '../../ui/js/utils';
+import STRING from './strings';
+import logger from 'packages/logger';
+const log = logger( );
 
-var util      = require( '../../ui/js/utils' );
-var STRING      = require( './strings' );
+class Overlay {
+    constructor ( element ) {
+        this.showOverlay = false;
 
-var showOverlay;
-
-/**
- * Initiates interstital overlay if cookie is not present, and visitor is not a crawler
- *
- * @param { string } id The interstitial's id
- */
-var init = function ( id ) {
-    var overlay   = window.document.getElementById( id );
-    var isCrawler = util.isCrawler();
-    var hasCookie = util.hasCookie( STRING.cookieName );
-
-    if ( !isCrawler && !hasCookie ) {
-        showOverlay = true;
-        util.setCookie( STRING.cookieName, true, 1 );
-
-    } else {
-
-        showOverlay = false;
     }
 
-    /* Console status */
-    log.info( showOverlay ? 'Should show Overlay.' : 'Should NOT show overlay.' );
+    init (  ) {
+        const isCrawler = util.isCrawler();
+        const hasCookie = util.hasCookie( STRING.cookieName );
 
-    if ( isCrawler ) {
-        log.info( 'User is search crawler.')
-    }
-    if ( hasCookie ) {
-        log.info( 'User has cookie set.')
-    }
+        this.element.style.visibility = 'hidden';
 
-    /* Display or remove overlay */
-    showOverlay ? show( overlay ) : util.removeNode( overlay );
-};
-
-/**
- * Shows or removes element based on condition
- *
- * @param { element } overlay The overlay element
- * @param { boolean } show    T/F to show the overlay
- */
-var show = function ( overlay ) {
-
-    var backgroundEffects = [ STRING.effect.fadeIn, STRING.effect.blur, STRING.effect.appear ];
-
-    /* Set data attribute for page view metrics */
-    overlay.setAttribute( STRING.data.shown, true );
-
-    /* Set up media */
-    util.mediaSourceSwap( overlay );
-
-    /* Bind sub-elements with close events */
-    util.bindChildren( overlay, STRING.selector.closeTriggers, STRING.event.click,
-        function( ) {
-
-            util.addClass( elem, STRING.effect.fadeOut );
-            util.getSiblings( overlay ).removeClass( backgroundEffects );
-
-            setTimeout(
-                function( ) {
-                    util.removeNode( elem );
-                },
-                util.getTransition( elem )
-            );
+        if ( !isCrawler && !hasCookie ) {
+            this.showOverlay = true;
+            util.setCookie( STRING.cookieName, true, 1 );
         }
-    )
 
-    /* Add visual effect to background sibling elements */
-    util.domReady( util.addClass( siblings, backgroundEffects ) );
+        /* Console status */
+        log.info( this.showOverlay ? 'Should show Overlay.' : 'Should NOT show overlay.' );
 
-    /* Display the Overlay */
-    util.removeClass( overlay, STRING.effect.hidden );
-    util.addClass( overlay, STRING.effect.fadeIn );
-};
+        if ( isCrawler ) {
+            log.info( 'User is search crawler.');
+        }
+        if ( hasCookie ) {
+            log.info( 'User has cookie set.');
+        }
 
-module.exports = {
-    init        : init,
-    showOverlay : showOverlay
+        /* Display or remove overlay */
+        return this.showOverlay ? this.show( this.element ) : util.removeNode( this.element );
+    }
+
+    show ( ) {
+        let element = this.element;
+
+        /* Set data attribute for page view metrics */
+        element.setAttribute( STRING.data.shown, true );
+
+        /* Set up media */
+        util.mediaSourceSwap( element );
+
+        /* Bind sub-elements with close events */
+        util.bindChildren( element, STRING.selector.closeTriggers, STRING.event.click,
+            ( ) => {
+
+                util.addClass( element, STRING.effect.fadeOut );
+                util.getSiblings( element ).removeClass( STRING.effect.backdrop );
+
+                setTimeout(
+                    ( ) => {
+                        util.removeNode( element );
+                    },
+                    util.getTransition( element )
+                );
+            }
+        );
+
+        /* Add visual effect to background sibling elements */
+        util.domReady( util.addClass( util.getSiblings( element ), STRING.effect.backdrop ) );
+
+        /* Display the Overlay */
+        element.style.visibility = 'initial';
+        util.removeClass( element, STRING.effect.hidden );
+        util.addClass( element, STRING.effect.fadeIn );
+    }
+}
+
+
+export {
+    init,
+    showOverlay
 };

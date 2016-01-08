@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = {
+export {
 
     data: {
         styles:        'data-product-styles',
@@ -13,4 +13,4 @@ module.exports = {
         name    : '.product-name',
         price   : '.product-price'
     }
-}
+};
